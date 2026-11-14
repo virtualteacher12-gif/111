@@ -1,0 +1,224 @@
+<!-- ... existing code ... -->
+        .praise-banner {
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        /* Стилі для кнопки Завершити та екрану фіналу сесії */
+        .btn-finish {
+            background: linear-gradient(135deg, var(--accent-mint), #059669);
+            color: #022c22;
+            border: none;
+            border-radius: 14px;
+            padding: 15px 28px;
+            font-family: var(--font-main);
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px -5px var(--mint-glow);
+            transition: all 0.25s ease;
+            width: 100%;
+        }
+
+        .btn-finish:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px -4px rgba(16, 185, 129, 0.55);
+            filter: brightness(1.06);
+        }
+
+        .btn-finish:active {
+            transform: translateY(0);
+        }
+
+        .goodbye-icon {
+            width: 84px;
+            height: 84px;
+            margin: 0 auto 20px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.25), rgba(16, 185, 129, 0.25));
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 0 30px var(--mint-glow);
+        }
+
+        .summary-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 0.92rem;
+            color: var(--accent-mint);
+            margin-bottom: 24px;
+        }
+
+        /* Спливаюче повідомлення (Toast замість alert) */
+<!-- ... existing code ... -->
+            <!-- 3. ФІНАЛЬНИЙ ЕКРАН РЕЗУЛЬТАТІВ -->
+            <section id="resultScreen" class="screen">
+                <div class="score-circle">
+                    <div id="finalScoreNumber" class="score-number">5/5</div>
+                    <div class="score-label">Твій результат</div>
+                </div>
+
+                <h1 id="resultRankTitle" style="text-align: center;">AI-Архітектор!</h1>
+                
+                <div class="praise-banner">
+                    <p id="praiseText" style="color: #f1f5f9; margin-bottom: 0; font-size: 1.08rem;">
+                        Неймовірний результат!
+                    </p>
+                </div>
+
+                <div class="actions-row">
+                    <button id="finishBtn" class="btn-finish" type="button">
+                        Завершити ✨
+                    </button>
+                </div>
+
+                <div class="actions-row two-cols" style="margin-top: 12px;">
+                    <button id="restartBtn" class="btn-primary" type="button">
+                        Пройти ще раз 🔄
+                    </button>
+                    <button id="downloadHtmlBtn" class="btn-secondary" type="button">
+                        Завантажити index.html ⬇️
+                    </button>
+                </div>
+            </section>
+
+            <!-- 4. ЕКРАН ЗАВЕРШЕННЯ СЕСІЇ -->
+            <section id="goodbyeScreen" class="screen" style="text-align: center;">
+                <div class="goodbye-icon">🚀</div>
+                <h1>Квест успішно завершено!</h1>
+                <p style="max-width: 540px; margin: 0 auto 22px; color: #e2e8f0;">
+                    Дякуємо за участь! Ти прокачав свої знання про нейромережі, мовні моделі та цифрову безпеку. До нових зустрічей у світі ШІ!
+                </p>
+
+                <div class="summary-pill">
+                    <span>🏆 Твій підсумковий рахунок:</span>
+                    <strong id="goodbyeScoreBadge">5 / 5</strong>
+                </div>
+
+                <div class="actions-row" style="max-width: 340px; margin: 8px auto 0;">
+                    <button id="backToHomeBtn" class="btn-secondary" type="button">
+                        Повернутися на головну 🏠
+                    </button>
+                </div>
+            </section>
+
+        </main>
+    </div>
+<!-- ... existing code ... -->
+                    osc.start(start);
+                    osc.stop(start + note.dur + 0.02);
+                });
+            }
+
+            // М'який гармонійний фінальний звук при натисканні «Завершити»
+            playSessionEnd() {
+                if (!this.enabled) return;
+                this.init();
+                const chord = [
+                    { freq: 440.00, time: 0.00, dur: 0.45 }, // A4
+                    { freq: 554.37, time: 0.08, dur: 0.45 }, // C#5
+                    { freq: 659.25, time: 0.16, dur: 0.50 }, // E5
+                    { freq: 880.00, time: 0.24, dur: 0.65 }  // A5
+                ];
+
+                chord.forEach(note => {
+                    const start = this.ctx.currentTime + note.time;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(note.freq, start);
+
+                    gain.gain.setValueAtTime(0.001, start);
+                    gain.gain.linearRampToValueAtTime(0.14, start + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.0008, start + note.dur);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start(start);
+                    osc.stop(start + note.dur + 0.03);
+                });
+            }
+        }
+<!-- ... existing code ... -->
+        // DOM-елементи
+        const startScreen = document.getElementById('startScreen');
+        const questScreen = document.getElementById('questScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const goodbyeScreen = document.getElementById('goodbyeScreen');
+
+        const soundToggle = document.getElementById('soundToggle');
+<!-- ... existing code ... -->
+        const finalScoreNumber = document.getElementById('finalScoreNumber');
+        const resultRankTitle = document.getElementById('resultRankTitle');
+        const praiseText = document.getElementById('praiseText');
+        const finishBtn = document.getElementById('finishBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const downloadHtmlBtn = document.getElementById('downloadHtmlBtn');
+        const goodbyeScoreBadge = document.getElementById('goodbyeScoreBadge');
+        const backToHomeBtn = document.getElementById('backToHomeBtn');
+        const toast = document.getElementById('toast');
+
+        // Перемикач екранів
+        function showScreen(screenElement) {
+            [startScreen, questScreen, resultScreen, goodbyeScreen].forEach(s => s.classList.remove('active'));
+            screenElement.classList.add('active');
+        }
+<!-- ... existing code ... -->
+            // Скидання стану питання (спочатку користувач читає теорію)
+            unlockQuestionWrap.style.display = 'block';
+            questionArea.style.display = 'none';
+            explanationBox.style.display = 'none';
+            nextBtn.disabled = true;
+            nextBtn.textContent = (index === questData.length - 1) 
+                ? 'Переглянути результати ➔' 
+                : 'Наступний етап ➔';
+
+            // Генерація питання та варіантів відповіді
+<!-- ... existing code ... -->
+        // Перезапуск квесту
+        restartBtn.addEventListener('click', () => {
+            sound.playClick();
+            currentStep = 0;
+            score = 0;
+            showScreen(questScreen);
+            loadStep(0);
+        });
+
+        // Завершення сесії квесту
+        finishBtn.addEventListener('click', () => {
+            sound.playSessionEnd();
+            goodbyeScoreBadge.textContent = `${score} / ${questData.length}`;
+            showScreen(goodbyeScreen);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Повернення на головний екран із фінального екрану сесії
+        backToHomeBtn.addEventListener('click', () => {
+            sound.playClick();
+            currentStep = 0;
+            score = 0;
+            showScreen(startScreen);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Перемикання звуку
+<!-- ... existing code ... -->
